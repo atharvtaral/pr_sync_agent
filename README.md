@@ -487,9 +487,9 @@ MIT License
 
 # 👨‍💻 Author
 
-**Your Name**
+**Atharv Taral**
 
-GitHub: https://github.com/YOUR_GITHUB_USERNAME
+GitHub: https://github.com/atharvtaral
 
 ---
 
