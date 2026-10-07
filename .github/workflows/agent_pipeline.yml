@@ -1,0 +1,36 @@
+name: PR AI Review & Cross-Repo Sync Pipeline
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  run-agents:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Execute Dual-Agent Orchestrator
+        env:
+          GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          REPO_A_NAME: ${{ github.repository }}
+          REPO_B_NAME: ${{ secrets.TARGET_REPO_B_NAME }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BRANCH_NAME: ${{ github.head_ref }}
+          LLM_MODEL_NAME: ${{ vars.LLM_MODEL_NAME || 'gemma-4-26b-a4b-it' }}
+        run: |
+          python main.py

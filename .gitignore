@@ -1,0 +1,31 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+
+# Environment variables & secrets (CRITICAL)
+.env
+.env.local
+*.env
+
+# IDE & Editor settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Distribution / Packaging
+build/
+dist/
+*.egg-info/
+
+# OS generated files
+.DS_Store
+Thumbs.db
