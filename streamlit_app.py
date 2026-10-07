@@ -1,3 +1,50 @@
+# """
+# Streamlit Dashboard for Dual-Agent GitHub Automation System.
+# Provides a visual interface to run, test, and monitor Agent 1 (AI Reviewer) and Agent 2 (Sync Agent).
+# """
+
+# import os
+# import streamlit as st  # pyright: ignore[reportMissingImports]
+# from app.config import config
+# from app.github_api.client import get_repo_a, get_repo_b
+# from app.review.reviewer_agent import run_reviewer_agent, generate_review
+# from app.sync.sync_agent import run_sync_agent
+
+# # Page Configuration
+# st.set_page_config(
+#     page_title="Dual-Agent GitHub Automation Dashboard",
+#     page_icon="🤖",
+#     layout="wide",
+# )
+
+# st.title("🤖 Dual-Agent GitHub Automation Dashboard")
+# st.markdown("Manage and test **Agent 1 (AI Code Reviewer)** and **Agent 2 (Cross-Repo Sync Agent)** in real-time.")
+
+# # Sidebar Configuration
+# st.sidebar.header("⚙️ Configuration Overview")
+
+# env_status = {
+#     "GitHub Token": bool(config.GITHUB_TOKEN),
+#     "Repo A": config.REPO_A_NAME or "Not Set",
+#     "Repo B": config.REPO_B_NAME or "Not Set",
+#     "Gemini API Key": bool(config.GEMINI_API_KEY),
+#     "LLM Model": config.LLM_MODEL_NAME,
+# }
+
+# for key, val in env_status.items():
+#     if isinstance(val, bool):
+#         st.sidebar.write(f"**{key}:** {'✅ Set' if val else '❌ Missing'}")
+#     else:
+#         st.sidebar.write(f"**{key}:** {val}")
+
+# st.sidebar.divider()
+# st.sidebar.info("Ensure all required credentials are standard environment variables or set in `.env`.")
+
+
+
+
+
+
 """
 Streamlit Dashboard for Dual-Agent GitHub Automation System.
 Provides a visual interface to run, test, and monitor Agent 1 (AI Reviewer) and Agent 2 (Sync Agent).
@@ -6,6 +53,17 @@ Provides a visual interface to run, test, and monitor Agent 1 (AI Reviewer) and 
 import os
 import streamlit as st  # pyright: ignore[reportMissingImports]
 from app.config import config
+from app.github_api.client import get_repo_a, get_repo_b
+from app.review.reviewer_agent import run_reviewer_agent, generate_review
+from app.sync.sync_agent import run_sync_agent
+
+
+# Helper to read from st.secrets or os.getenv dynamically
+def fetch_env(key: str, default: str = "") -> str:
+    if key in st.secrets:
+        return str(st.secrets[key])
+    return os.getenv(key, default)
+
 from app.github_api.client import get_repo_a, get_repo_b
 from app.review.reviewer_agent import run_reviewer_agent, generate_review
 from app.sync.sync_agent import run_sync_agent
@@ -20,15 +78,21 @@ st.set_page_config(
 st.title("🤖 Dual-Agent GitHub Automation Dashboard")
 st.markdown("Manage and test **Agent 1 (AI Code Reviewer)** and **Agent 2 (Cross-Repo Sync Agent)** in real-time.")
 
-# Sidebar Configuration
+# Sidebar Configuration - Fetch values directly at runtime
 st.sidebar.header("⚙️ Configuration Overview")
 
+github_token = fetch_env("GITHUB_TOKEN")
+repo_a_name = fetch_env("REPO_A_NAME")
+repo_b_name = fetch_env("REPO_B_NAME")
+gemini_key = fetch_env("GEMINI_API_KEY")
+llm_model = fetch_env("LLM_MODEL_NAME", "gemma-4-26b-a4b-it")
+
 env_status = {
-    "GitHub Token": bool(config.GITHUB_TOKEN),
-    "Repo A": config.REPO_A_NAME or "Not Set",
-    "Repo B": config.REPO_B_NAME or "Not Set",
-    "Gemini API Key": bool(config.GEMINI_API_KEY),
-    "LLM Model": config.LLM_MODEL_NAME,
+    "GitHub Token": bool(github_token),
+    "Repo A": repo_a_name or "Not Set",
+    "Repo B": repo_b_name or "Not Set",
+    "Gemini API Key": bool(gemini_key),
+    "LLM Model": llm_model,
 }
 
 for key, val in env_status.items():
